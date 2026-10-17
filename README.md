@@ -106,5 +106,7 @@ All settings are environment variables, listed in [backend/.env.example](backend
 
 ## Deployment
 
-- Backend: Render web service from `render.yaml` (root directory `backend`).
+- Backend: Render Docker web service from `render.yaml` (builds `backend/Dockerfile`).
 - Frontend: Vercel project with root directory `frontend` and `NEXT_PUBLIC_API_URL` pointing at the Render URL.
+
+Step-by-step instructions are in [DEPLOYMENT.md](DEPLOYMENT.md).

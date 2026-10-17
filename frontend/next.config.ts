@@ -1,8 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Required by the production Docker image (standalone server bundle).
-  output: "standalone",
+  // Standalone server bundle for the Docker image; Vercel uses its own output.
+  output: process.env.VERCEL ? undefined : "standalone",
   reactStrictMode: true,
   poweredByHeader: false,
   experimental: {
