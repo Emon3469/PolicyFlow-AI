@@ -1,0 +1,47 @@
+name: policyflow-ai
+
+services:
+  api:
+    build:
+      context: ./backend
+      args:
+        PYTHON_VERSION: "3.13"
+    image: policyflow-ai:api
+    init: true
+    restart: unless-stopped
+    env_file:
+      - path: backend/.env
+        required: false
+    environment:
+      PORT: "8000"
+      CORS_ORIGINS: "${CORS_ORIGINS:-http://localhost:3000,http://127.0.0.1:3000}"
+    volumes:
+      # Seeded from the bundled knowledge base on first run, then persistent.
+      - api-data:/app/data
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/health', timeout=4)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  web:
+    build:
+      context: ./frontend
+      args:
+        NEXT_PUBLIC_API_URL: "${NEXT_PUBLIC_API_URL:-http://localhost:8000}"
+    image: policyflow-ai:web
+    init: true
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+    ports:
+      - "3000:3000"
+    depends_on:
+      api:
+        condition: service_healthy
+
+volumes:
+  api-data:
